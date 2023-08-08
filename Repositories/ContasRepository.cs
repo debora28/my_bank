@@ -4,20 +4,19 @@ using MyLastApi.Models;
 
 namespace MyLastApi.Repositories
 {
-    public class ContasBancariasRepository : IContasBancariasRepository
+    public class ContasRepository : IContasRepository
     {
-        public readonly ContasContext DbContext;
-
-        public ContasBancariasRepository(ContasContext context)
+        public readonly BancoContext DbContext;
+        public ContasRepository(BancoContext context)
         {
             DbContext = context;
         }
-        public async Task<IEnumerable<ContaBancaria>> GetContas()
+        public async Task<IEnumerable<Conta>> GetContas()
         {
             return await DbContext.Contas.ToListAsync();
         }
 
-        public async Task<ContaBancaria> GetConta(int IdConta)
+        public async Task<Conta> GetConta(int IdConta)
         {
             var conta = await DbContext.Contas.FindAsync(IdConta);
             if (conta == null)
@@ -30,27 +29,28 @@ namespace MyLastApi.Repositories
             }
         }
 
-        public async Task<ContaBancaria> CreateConta(ContaBancaria conta)
+        public async Task<Conta> CreateConta(Conta conta)
         {
-            DbContext.Contas.Add(conta);
+            DbContext.Add(conta);
             await DbContext.SaveChangesAsync();
             return conta;
         }
 
-        public async Task<ContaBancaria> UpdateConta(ContaBancaria conta)
+        public async Task<Conta> UpdateConta(Conta conta)
         {
             DbContext.Entry(conta).State = EntityState.Modified;
             await DbContext.SaveChangesAsync();
             return conta;
         }
 
-        public async Task DeleteConta(int IdConta)
+        public async Task DeleteConta(int idConta)
         {
-            var conta = DbContext.Contas.Find(IdConta);
-            if(conta == null)
+            var conta = await DbContext.Contas.FindAsync(idConta);
+            if (conta == null)
             {
                 throw new Exception();
-            } else
+            }
+            else
             {
                 DbContext.Contas.Remove(conta);
                 await DbContext.SaveChangesAsync();

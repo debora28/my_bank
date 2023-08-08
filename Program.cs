@@ -8,13 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 //Para as migrations:
-builder.Services.AddDbContext<ContasContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+builder.Services.AddDbContext<BancoContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
 //,ServerVersion.Parse("")
 ));
 builder.Services.AddMvc();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 //builder.Services.AddScoped<IValidacaoCpf, ValidacaoCpf>();
-builder.Services.AddScoped<IContasBancariasRepository, ContasBancariasRepository>();
+builder.Services.AddScoped<IContasRepository, ContasRepository>();
 
 //AddControllers
 builder.Services.AddControllers();

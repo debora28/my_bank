@@ -11,8 +11,8 @@ using MyLastApi.Migrations;
 
 namespace MyLastApi.Migrations
 {
-    [DbContext(typeof(ContasContext))]
-    [Migration("20230807191307_Initial")]
+    [DbContext(typeof(BancoContext))]
+    [Migration("20230808022203_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -71,7 +71,7 @@ namespace MyLastApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("MyLastApi.Models.ContaBancaria", b =>
+            modelBuilder.Entity("MyLastApi.Models.Conta", b =>
                 {
                     b.Property<int>("IdConta")
                         .ValueGeneratedOnAdd()
@@ -79,24 +79,31 @@ namespace MyLastApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdConta"));
 
+                    b.Property<string>("Agencia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("Ativa")
                         .HasColumnType("bit");
 
                     b.Property<bool>("Bloqueada")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ClienteId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("LimiteDiario")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("NumConta")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Saldo")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("UsuarioId")
+                        .HasColumnType("int");
+
                     b.HasKey("IdConta");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Contas");
 
@@ -104,28 +111,31 @@ namespace MyLastApi.Migrations
                         new
                         {
                             IdConta = 1,
+                            Agencia = "0123",
                             Ativa = true,
                             Bloqueada = false,
-                            ClienteId = 1,
                             LimiteDiario = 0m,
+                            NumConta = 1,
                             Saldo = 0m
                         },
                         new
                         {
                             IdConta = 2,
+                            Agencia = "0123",
                             Ativa = true,
                             Bloqueada = false,
-                            ClienteId = 2,
                             LimiteDiario = 0m,
+                            NumConta = 2,
                             Saldo = 0m
                         },
                         new
                         {
                             IdConta = 3,
+                            Agencia = "0123",
                             Ativa = true,
                             Bloqueada = false,
-                            ClienteId = 3,
                             LimiteDiario = 0m,
+                            NumConta = 3,
                             Saldo = 0m
                         });
                 });
@@ -138,6 +148,9 @@ namespace MyLastApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdOperacao"));
 
+                    b.Property<int?>("ContaIdConta")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DataOperacao")
                         .HasColumnType("datetime2");
 
@@ -149,23 +162,50 @@ namespace MyLastApi.Migrations
                         .IsRequired()
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<byte[]>("Versao")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.HasKey("IdOperacao");
 
+                    b.HasIndex("ContaIdConta");
+
                     b.ToTable("Operacoes");
+
+                    b.HasData(
+                        new
+                        {
+                            IdOperacao = 1,
+                            DataOperacao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TipoOperacao = "Depósito",
+                            Valor = 8798.13m
+                        },
+                        new
+                        {
+                            IdOperacao = 2,
+                            DataOperacao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TipoOperacao = "Saque",
+                            Valor = 452.17m
+                        });
                 });
 
-            modelBuilder.Entity("MyLastApi.Models.ContaBancaria", b =>
+            modelBuilder.Entity("MyLastApi.Models.Conta", b =>
                 {
-                    b.HasOne("MyLastApi.Model.Usuario", "Cliente")
+                    b.HasOne("MyLastApi.Model.Usuario", "Usuario")
                         .WithMany()
-                        .HasForeignKey("ClienteId");
+                        .HasForeignKey("UsuarioId");
 
-                    b.Navigation("Cliente");
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("MyLastApi.Models.Operacao", b =>
+                {
+                    b.HasOne("MyLastApi.Models.Conta", "Conta")
+                        .WithMany("Operacoes")
+                        .HasForeignKey("ContaIdConta");
+
+                    b.Navigation("Conta");
+                });
+
+            modelBuilder.Entity("MyLastApi.Models.Conta", b =>
+                {
+                    b.Navigation("Operacoes");
                 });
 #pragma warning restore 612, 618
         }

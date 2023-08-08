@@ -13,10 +13,17 @@ namespace MyLastApi.Models
         [Required]
         public string ? TipoOperacao { get; set; }
         public DateTime DataOperacao { get; set; }
-        [Timestamp]
-        public byte[] ? Versao { get; set; }
+        //[Timestamp]
+        //remover versão daqui:
+        //public byte[] ? Versao { get; set; }
         [Required]
-        public decimal ? Valor { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? Valor { get; set; }
+        //[NotMapped]
+        public virtual Conta? Conta { get; set; }
+        //[ForeignKey(nameof(Conta))]
+        //public int? IdConta { get; set; }
+
 
         Operacao()
         {

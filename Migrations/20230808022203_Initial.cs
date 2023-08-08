@@ -14,22 +14,6 @@ namespace MyLastApi.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Operacoes",
-                columns: table => new
-                {
-                    IdOperacao = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TipoOperacao = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DataOperacao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Versao = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
-                    Valor = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Operacoes", x => x.IdOperacao);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Usuarios",
                 columns: table => new
                 {
@@ -50,20 +34,62 @@ namespace MyLastApi.Migrations
                 {
                     IdConta = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Agencia = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NumConta = table.Column<int>(type: "int", nullable: false),
                     Saldo = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Ativa = table.Column<bool>(type: "bit", nullable: false),
                     Bloqueada = table.Column<bool>(type: "bit", nullable: false),
                     LimiteDiario = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ClienteId = table.Column<int>(type: "int", nullable: true)
+                    UsuarioId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Contas", x => x.IdConta);
                     table.ForeignKey(
-                        name: "FK_Contas_Usuarios_ClienteId",
-                        column: x => x.ClienteId,
+                        name: "FK_Contas_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
                         principalTable: "Usuarios",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Operacoes",
+                columns: table => new
+                {
+                    IdOperacao = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TipoOperacao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataOperacao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Valor = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ContaIdConta = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Operacoes", x => x.IdOperacao);
+                    table.ForeignKey(
+                        name: "FK_Operacoes_Contas_ContaIdConta",
+                        column: x => x.ContaIdConta,
+                        principalTable: "Contas",
+                        principalColumn: "IdConta");
+                });
+
+            migrationBuilder.InsertData(
+                table: "Contas",
+                columns: new[] { "IdConta", "Agencia", "Ativa", "Bloqueada", "LimiteDiario", "NumConta", "Saldo", "UsuarioId" },
+                values: new object[,]
+                {
+                    { 1, "0123", true, false, 0m, 1, 0m, null },
+                    { 2, "0123", true, false, 0m, 2, 0m, null },
+                    { 3, "0123", true, false, 0m, 3, 0m, null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Operacoes",
+                columns: new[] { "IdOperacao", "ContaIdConta", "DataOperacao", "TipoOperacao", "Valor" },
+                values: new object[,]
+                {
+                    { 1, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Depósito", 8798.13m },
+                    { 2, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Saque", 452.17m }
                 });
 
             migrationBuilder.InsertData(
@@ -76,30 +102,25 @@ namespace MyLastApi.Migrations
                     { 3, "47633984074", new DateTime(1980, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "Orlando" }
                 });
 
-            migrationBuilder.InsertData(
+            migrationBuilder.CreateIndex(
+                name: "IX_Contas_UsuarioId",
                 table: "Contas",
-                columns: new[] { "IdConta", "Ativa", "Bloqueada", "ClienteId", "LimiteDiario", "Saldo" },
-                values: new object[,]
-                {
-                    { 1, true, false, 1, 0m, 0m },
-                    { 2, true, false, 2, 0m, 0m },
-                    { 3, true, false, 3, 0m, 0m }
-                });
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contas_ClienteId",
-                table: "Contas",
-                column: "ClienteId");
+                name: "IX_Operacoes_ContaIdConta",
+                table: "Operacoes",
+                column: "ContaIdConta");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Contas");
+                name: "Operacoes");
 
             migrationBuilder.DropTable(
-                name: "Operacoes");
+                name: "Contas");
 
             migrationBuilder.DropTable(
                 name: "Usuarios");

@@ -7,8 +7,8 @@ namespace MyLastApi.Repositories
 {
     public class UsuariosRepository : IUsuariosRepository
     {
-        public readonly ContasContext DbContext;
-        public UsuariosRepository(ContasContext dbContext)
+        public readonly BancoContext DbContext;
+        public UsuariosRepository(BancoContext dbContext)
         {
             DbContext = dbContext;
         }
