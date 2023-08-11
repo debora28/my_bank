@@ -58,7 +58,7 @@ namespace MyLastApi.Repositories
             var usuarioId = await DbContext.Usuarios.FindAsync(id);
             if (usuarioId == null)
             {
-                throw new Exception("Não encontrado");
+                throw new Exception();
             }
             else
             {

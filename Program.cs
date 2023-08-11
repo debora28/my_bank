@@ -11,7 +11,7 @@ builder.Services.AddDbContext<BancoContext>(opt => opt.UseSqlServer(builder.Conf
 builder.Services.AddMvc();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
 builder.Services.AddScoped<IContasRepository, ContasRepository>();
-//builder.Services.AddScoped<IOperacoesRepository, OperacoesRepository>();
+builder.Services.AddScoped<IOperacoesRepository, OperacoesRepository>();
 
 //Para o padrão Rest, as rotas devem estar em caixa baixa:
 builder.Services.Configure<RouteOptions>(options =>

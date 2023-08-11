@@ -8,7 +8,7 @@ namespace MyLastApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ContaController : Controller
+    public class ContaController : ControllerBase
     {
         private readonly IContasRepository _contasRepository;
 
