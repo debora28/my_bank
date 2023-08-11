@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using MyLastApi.Models.Entities.Usuarios;
 using MyLastApi.Repositories;
 using MyLastApi.Model;
-using System;
-//using MyLastApi.Services;
 
 namespace MyLastApi.Controllers
 {
@@ -13,26 +9,40 @@ namespace MyLastApi.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly IUsuariosRepository _usuariosRepository;
-        //private readonly IValidacaoCpf _validacaoCpf;
 
-        public UsuarioController(IUsuariosRepository usuariosRepository /*, IValidacaoCpf validacaoCpf*/)
+        public UsuarioController(IUsuariosRepository usuariosRepository)
         {
             _usuariosRepository = usuariosRepository;
-            //_validacaoCpf = validacaoCpf;
         }
 
         //GETALL 
         [HttpGet]
         public async Task<IEnumerable<Usuario>> GetAll()
         {
-            return await _usuariosRepository.GetUsuarios();
+            var usuarios = await _usuariosRepository.GetUsuarios();
+            if (usuarios == null)
+            {
+                return (IEnumerable<Usuario>)NotFound("Não há registros.");
+            }
+            else
+            {
+                return usuarios;
+            }
         }
 
         //GETONE
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetOne(int id)
         {
-            return await _usuariosRepository.GetUsuario(id);
+            var usuario = await _usuariosRepository.GetUsuario(id);
+            if (usuario == null)
+            {
+                return NotFound(new { message = $"Usuário de id={id} não encontrado." });
+            }
+            else
+            {
+                return usuario;
+            }
         }
 
         //POST
@@ -42,34 +52,57 @@ namespace MyLastApi.Controllers
             if (usuario == null) { return BadRequest(); }
             else
             {
-                //bool validado = !_validacaoCpf.ValidaCpf(usuario.Cpf);
-                //if (validado == true)
-                //{
-                //    var usuarioNovo = await _usuariosRepository.CreateUsuario(usuario);
-                //    return CreatedAtAction(nameof(GetAll), new { id = usuarioNovo.Id }, usuarioNovo);
-                //}
-                //else
-                //{
-                //    return BadRequest();
-                //}
-                var usuarioNovo = await _usuariosRepository.CreateUsuario(usuario);
-                return CreatedAtAction(nameof(GetAll), new { id = usuarioNovo.Id }, usuarioNovo);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                else
+                {
+                    try
+                    {
+                        var usuarioNovo = await _usuariosRepository.CreateUsuario(usuario);
+                        return CreatedAtAction(nameof(GetAll), new { id = usuarioNovo.Id }, usuarioNovo);
+                    }
+                    catch
+                    {
+                        return BadRequest(new { message = "Falha inesperada." });
+                    }
+                }
             }
         }
 
         //PUT
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] Usuario usuario)
         {
-            if (id == usuario.Id)
-            {
-                await _usuariosRepository.UpdateUsuario(usuario);
-                return Ok();
-            }
+            if (usuario == null) { return NotFound(); }
             else
             {
-                return NoContent();
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                else
+                {
+                    try
+                    {
+                        if (id == usuario.Id)
+                        {
+                            await _usuariosRepository.UpdateUsuario(usuario);
+                            return Ok();
+                        }
+                        else
+                        {
+                            return BadRequest();
+                        }
+                    }
+                    catch
+                    {
+                        return BadRequest();
+                    }
+                }
             }
+
         }
 
         //DELETE
@@ -84,8 +117,23 @@ namespace MyLastApi.Controllers
             }
             else
             {
-                await _usuariosRepository.DeleteUsuario(usuario.Id);
-                return NoContent();
+                try
+                {
+                    if (id == usuario.Id)
+                    {
+                        await _usuariosRepository.DeleteUsuario(usuario.Id);
+                        return Ok();
+                    }
+                    else
+                    {
+                        return NotFound(new { message = $"Usuário de id={id} não encontrado." });
+                    }
+                }
+                catch
+                {
+                    return BadRequest();
+                }
+                
             }
         }
     }

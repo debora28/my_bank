@@ -1,6 +1,7 @@
 ﻿using MyLastApi.Model;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MyLastApi.Models
 {
@@ -20,10 +21,10 @@ namespace MyLastApi.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Valor { get; set; }
         //[NotMapped]
+        [JsonIgnore]
         public virtual Conta? Conta { get; set; }
         //[ForeignKey(nameof(Conta))]
         //public int? IdConta { get; set; }
-
 
         Operacao()
         {

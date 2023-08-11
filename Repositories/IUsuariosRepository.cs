@@ -1,5 +1,4 @@
 ﻿using MyLastApi.Model;
-using MyLastApi.Models.Entities.Usuarios;
 
 namespace MyLastApi.Repositories
 {

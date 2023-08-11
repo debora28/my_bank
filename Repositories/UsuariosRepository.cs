@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MyLastApi.Migrations;
 using MyLastApi.Model;
+using System.Net;
 
 namespace MyLastApi.Repositories
 {
@@ -40,9 +41,16 @@ namespace MyLastApi.Repositories
 
         public async Task<Usuario> UpdateUsuario(Usuario usuario)
         {
-            DbContext.Entry(usuario).State = EntityState.Modified;
-            await DbContext.SaveChangesAsync();
-            return usuario;
+            if (usuario == null)
+            {
+                throw new Exception();
+            }
+            else
+            {
+                DbContext.Entry(usuario).State = EntityState.Modified;
+                await DbContext.SaveChangesAsync();
+                return usuario;
+            }
         }
 
         public async Task DeleteUsuario(int id)
@@ -50,7 +58,7 @@ namespace MyLastApi.Repositories
             var usuarioId = await DbContext.Usuarios.FindAsync(id);
             if (usuarioId == null)
             {
-                throw new Exception();
+                throw new Exception("Não encontrado");
             }
             else
             {

@@ -1,20 +1,25 @@
 using Microsoft.EntityFrameworkCore;
 using MyLastApi.Migrations;
 using MyLastApi.Repositories;
-//using MyLastApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 //Para as migrations:
-builder.Services.AddDbContext<BancoContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
-//,ServerVersion.Parse("")
-));
+builder.Services.AddDbContext<BancoContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddMvc();
 builder.Services.AddScoped<IUsuariosRepository, UsuariosRepository>();
-//builder.Services.AddScoped<IValidacaoCpf, ValidacaoCpf>();
 builder.Services.AddScoped<IContasRepository, ContasRepository>();
+//builder.Services.AddScoped<IOperacoesRepository, OperacoesRepository>();
+
+//Para o padrão Rest, as rotas devem estar em caixa baixa:
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+    options.LowercaseQueryStrings = true;
+}
+);
 
 //AddControllers
 builder.Services.AddControllers();

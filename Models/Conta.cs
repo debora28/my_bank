@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using MyLastApi.Model;
 
@@ -13,7 +14,7 @@ namespace MyLastApi.Models
         [Required]
         public string Agencia { get; set; } = string.Empty;
         //[Index]
-        [Required]
+        //[JsonIgnore]
         public int NumConta { get; private set; }
         [NotMapped]
         static int nextConta;
@@ -26,10 +27,11 @@ namespace MyLastApi.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal LimiteDiario { get; set; }
         //[NotMapped]
+        [JsonIgnore]
         public virtual Usuario? Usuario { get; set; }
         //[ForeignKey(nameof(Usuario))]
         //public int? UsuarioId { get; set; }
-
+        [JsonIgnore]
         public ICollection<Operacao>? Operacoes { get; set; }
         public Conta(Usuario usuario, string agencia, int numConta, decimal saldo, bool ativa, bool flagBloqueio, decimal limiteDiario)
         {

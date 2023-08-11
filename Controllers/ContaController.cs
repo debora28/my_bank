@@ -47,17 +47,35 @@ namespace MyLastApi.Controllers
         }
 
         // GET: ContaController/Edit/5
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] Conta conta)
         {
-            if (id == conta.IdConta)
-            {
-                await _contasRepository.UpdateConta(conta);
-                return Ok();
-            }
+            if (conta == null) { return BadRequest(); }
             else
             {
-                return NoContent();
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                else
+                {
+                    try
+                    {
+                        if (id == conta.IdConta)
+                        {
+                            await _contasRepository.UpdateConta(conta);
+                            return Ok();
+                        }
+                        else
+                        {
+                            return BadRequest();
+                        }
+                    }
+                    catch
+                    {
+                        return BadRequest();
+                    }
+                }
             }
         }
 
